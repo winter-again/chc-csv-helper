@@ -37,10 +37,6 @@ def head(
     print(df.head(n=n))
 
 
-# TODO: do we need to worry about the column types and whether they're int/float or string?
-# for example don't want to read FIPS col incorrectly then save it incorrectly too
-# should we just read everything as string then?
-# what other args of read_csv() should we allow manipulation of?
 @app.command()
 def impute(
     file: Annotated[
@@ -93,13 +89,27 @@ def impute(
     """
     Impute columns of a CHC data export (CSV file).
     """
-    df = pd.read_csv(file)
+    df = pd.read_csv(file, dtype=str)  # read all as str
     rng = np.random.default_rng(seed)
     imp_val = int(val.replace("<=", "").strip())
     col_names = cols.split(",")
 
+    non_exist_cols = [col for col in col_names if col not in df.columns]
+    if len(non_exist_cols) != 0:
+        print(
+            f"Some columns specified by --cols are missing from the file:\n{', '.join(c for c in non_exist_cols)}"
+        )
+        raise typer.Exit(code=1)
+
     if all_cause_cols is not None:
         ac_col_names = all_cause_cols.split(",")
+        non_exist_ac_cols = [col for col in ac_col_names if col not in df.columns]
+        if len(non_exist_ac_cols) != 0:
+            print(
+                f"Some columns specified by --all-cause-cols are missing from the file:\n{', '.join(c for c in non_exist_ac_cols)}"
+            )
+            raise typer.Exit(code=1)
+
         if len(ac_col_names) != len(col_names):
             print(
                 "Make sure the values for --cols and --all-cause-cols are of the same length and are properly ordered."
@@ -114,12 +124,6 @@ def impute(
                 lambda x: impute_wrt_ac(x[ac_col], rng), axis=1
             )
     else:
-        # TODO: fix this check for whether the columns passed all exist
-        #
-        # if ~set(col_names).issubset(df.columns):
-        #     print("Some columns are missing from the file...")
-        #     print(col_names)
-        #     raise typer.Exit(code=1)
         for col in col_names:
             df.loc[df[col] == val, col] = rng.integers(
                 0, imp_val + 1, size=len(df.loc[df[col] == val])
