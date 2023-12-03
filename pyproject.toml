@@ -1,0 +1,19 @@
+[project]
+name = "chc-csv"
+version = "1.0.0"
+authors = [{ name = "Andrew Tiu", email = "mt1229@georgetown.edu" }]
+description = "Simple CLI for imputing counts and all-cause columns in CHC data exports."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["typer", "pandas", "numpy"]
+
+[project.scripts]
+chc-csv = "chc_csv.main:app"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["chc_csv*"]
+exclude = ["data*", "testing*"]
