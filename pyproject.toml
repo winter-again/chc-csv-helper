@@ -1,6 +1,6 @@
 [project]
 name = "chc-csv"
-version = "1.0.0"
+version = "1.0.1"
 authors = [{ name = "Andrew Tiu", email = "mt1229@georgetown.edu" }]
 description = "Simple CLI for imputing counts and all-cause columns in CHC data exports."
 readme = "README.md"
