@@ -58,18 +58,18 @@ def impute(
             "--val", "-v", help="The column value that should be replaced (e.g., '<=5')"
         ),
     ],
+    seed: Annotated[
+        int, typer.Option("--seed", "-s", help="A random seed for reproducibility.")
+    ],
     all_cause_cols: Annotated[
         str,
         typer.Option(
             "--all-cause-cols",
             "-a",
-            help="All-cause columns that should be imputed first. Note that each column here should match 1:1 with a column passed to --cols.",
+            help="All-cause columns that should be imputed first. Note that each column here should match 1:1 with a column passed to --cols (order matters).",
         ),
     ]
     | None = None,
-    seed: Annotated[
-        int, typer.Option("--seed", "-s", help="A random seed for reproducibility.")
-    ] = 123,
     output: Annotated[
         Path,
         typer.Option(
